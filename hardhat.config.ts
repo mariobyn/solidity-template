@@ -49,11 +49,9 @@ function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
       jsonRpcUrl = "https://" + chain + ".infura.io/v3/" + infuraApiKey;
   }
   return {
-    accounts: {
-      count: 10,
-      mnemonic,
-      path: "m/44'/60'/0'/0",
-    },
+    accounts: process.env.DEPLOYER_PRIVATE_KEY
+      ? [`${process.env.DEPLOYER_PRIVATE_KEY}`]
+      : ["0x0000000000000000000000000000000000000000"],
     chainId: chainIds[chain],
     url: jsonRpcUrl,
   };
@@ -118,8 +116,14 @@ const config: HardhatUserConfig = {
     },
   },
   typechain: {
-    outDir: "src/types",
+    outDir: "typechain",
     target: "ethers-v5",
+  },
+  contractSizer: {
+    alphaSort: true,
+    disambiguatePaths: false,
+    runOnCompile: false, // make this true if you want to run contract sizer at compile
+    strict: true,
   },
 };
 
